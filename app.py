@@ -6,12 +6,12 @@ from engine.models import DataAsset, Destination, Sensitivity
 
 
 st.set_page_config(
-    page_title="LeakPath",
+    page_title="SentinelAI",
     page_icon="🛡️",
     layout="wide",
 )
 
-st.title("🛡️ LeakPath")
+st.title("🛡️ SentinelAI")
 st.subheader("AI Agent Data Leak Detection Lab")
 
 st.write(
@@ -264,6 +264,6 @@ st.divider()
 # --------------------------------------------------
 
 st.caption(
-    "LeakPath prototype · Simulated scenarios · "
+    "SentinelAI prototype · Simulated scenarios · "
     "Detection rules are still under development"
 )

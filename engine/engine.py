@@ -16,7 +16,7 @@ SEVERITY_BY_SENSITIVITY = {
 
 
 # Define the maximum sensitivity each destination may receive.
-# These are simulated policies for the LeakPath prototype.
+# These are simulated policies for the SentinelAI prototype.
 MAX_SENSITIVITY_BY_DESTINATION = {
     "database_1": Sensitivity.SECRET,
     "external_api_1": None,
