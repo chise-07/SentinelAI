@@ -1,18 +1,83 @@
 
 import streamlit as st
+import base64
+from pathlib import Path
 
 from engine.engine import analyze_flow
 from engine.models import DataAsset, Destination, Sensitivity
 
 
+# --------------------------------------------------
+# Page configuration
+# --------------------------------------------------
+
 st.set_page_config(
     page_title="SentinelAI",
-    page_icon="🛡️",
+    page_icon="sentinelai_logo.png",
     layout="wide",
 )
 
-st.title("🛡️ SentinelAI")
-st.subheader("AI Agent Data Leak Detection Lab")
+PROJECT_DIR = Path(__file__).parent
+LOGO_PATH = PROJECT_DIR / "sentinelai_logo.png"
+BACKGROUND_PATH = PROJECT_DIR / "sentinelai_background.png"
+
+
+# --------------------------------------------------
+# Background image styling
+# --------------------------------------------------
+
+if BACKGROUND_PATH.exists():
+    with open(BACKGROUND_PATH, "rb") as image_file:
+        background_base64 = base64.b64encode(
+            image_file.read()
+        ).decode()
+
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image:
+                linear-gradient(
+                    rgba(2, 8, 25, 0.78),
+                    rgba(2, 8, 25, 0.82)
+                ),
+                url("data:image/png;base64,{background_base64}");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+
+        [data-testid="stHeader"] {{
+            background: rgba(2, 8, 25, 0.35);
+        }}
+
+        .block-container {{
+            padding-top: 2rem;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+else:
+    st.warning("Background image not found. Check its filename.")
+
+
+# --------------------------------------------------
+# Header and branding
+# --------------------------------------------------
+
+logo_col, title_col = st.columns([1, 7])
+
+with logo_col:
+    if LOGO_PATH.exists():
+        st.image(str(LOGO_PATH), width=110)
+    else:
+        st.write("🛡️")
+
+with title_col:
+    st.title("SentinelAI")
+    st.subheader("AI Agent Data Leak Detection Lab")
 
 st.write(
     "Simulate how information moves through an AI workflow "
@@ -25,6 +90,7 @@ st.warning(
 )
 
 st.divider()
+
 
 # --------------------------------------------------
 # 1. Configure a simulated data flow
@@ -80,10 +146,11 @@ with right:
     )
 
     destination_details = {
-        "Approved company database": ("database_1", True),
-        "Unapproved external API": ("external_api_1", False),
-        "Unapproved public logging service": ("logging_1", False),
-    }
+    "Approved company database": ("database_1", True),
+    "Unapproved external API": ("external_api_1", False),
+    "Unapproved public logging service": ("logging_1", False),
+    "Approved company logging service": ("logging_1", True),
+}
 
     destination_id, is_approved = destination_details[
         destination_choice
@@ -101,6 +168,7 @@ with right:
     )
 
 st.divider()
+
 
 # --------------------------------------------------
 # 2. Visualize the data flow
@@ -146,6 +214,7 @@ st.caption(
 
 st.divider()
 
+
 # --------------------------------------------------
 # 3. Run the security analysis
 # --------------------------------------------------
@@ -165,17 +234,15 @@ if st.button("🔍 Analyze data flow", type="primary"):
 
     if finding is None:
         st.success(
-            "No violation detected by the current "
-            "destination-approval rule."
+            "No violation detected by the current security rules."
         )
 
         st.caption(
             "This does not guarantee the flow is secure; "
-            "other security rules are not implemented yet."
+            "other security rules may not be implemented yet."
         )
 
     else:
-        # Read severity without assuming it is a string.
         severity_value = getattr(
             finding.severity,
             "value",
@@ -185,8 +252,6 @@ if st.button("🔍 Analyze data flow", type="primary"):
 
         st.error(f"Severity: {severity_key.upper()}")
 
-        # Use the existing asset and destination objects.
-        # These attributes are defined in app.py.
         st.write(f"**Data:** {asset.name}")
         st.write(
             f"**Sensitivity:** {asset.sensitivity.value.upper()}"
@@ -197,7 +262,6 @@ if st.button("🔍 Analyze data flow", type="primary"):
             f"{'APPROVED' if destination.approved else 'UNAPPROVED'}"
         )
 
-        # Safely retrieve an explanation if the engine provides one.
         explanation = None
 
         for attribute_name in (
@@ -254,10 +318,11 @@ if st.button("🔍 Analyze data flow", type="primary"):
 
         st.caption(
             "This finding is based on simulated data and the "
-            "current destination-approval policy."
+            "current security policies."
         )
 
 st.divider()
+
 
 # --------------------------------------------------
 # Footer
@@ -265,5 +330,5 @@ st.divider()
 
 st.caption(
     "SentinelAI prototype · Simulated scenarios · "
-    "Detection rules are still under development"
+    "Security detection rules under development"
 )
