@@ -81,6 +81,4 @@ Use fictional data when testing the application.
 
 ## 👨‍💻 Author
 
-Computer Engineering Student
-
-Interested in Artificial Intelligence, Cybersecurity, and Secure Software Development.
+H.G.Bulankulama
